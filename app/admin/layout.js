@@ -31,38 +31,60 @@ export default function AdminLayout({ children }) {
   ]
 
   if (!user) return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', fontFamily: 'sans-serif', color: '#666' }}>
+    <div style={{
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      height: '100vh', background: '#0d0d1a', color: 'rgba(255,255,255,0.4)',
+      fontFamily: "'Inter', sans-serif", fontSize: 14, gap: 10
+    }}>
+      <div style={{ width: 8, height: 8, background: '#F40756', borderRadius: '50%', animation: 'pulse 1s infinite' }} />
       Checking access...
+      <style>{`@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.4)} }`}</style>
     </div>
   )
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: "'Sarabun', sans-serif", background: '#f4f4f4' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: "'Inter', 'Sarabun', sans-serif", background: '#0d0d1a' }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sarabun:wght@400;500;600;700;800&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
         a { text-decoration: none; color: inherit; }
-        .nav-item:hover { background: rgba(105,0,40,0.15) !important; color: #fff !important; }
+
+        .nav-item { transition: all 0.2s ease; }
+        .nav-item:hover { background: rgba(244,7,86,0.12) !important; color: #fff !important; }
+
+        .logout-btn { transition: all 0.2s ease; }
+        .logout-btn:hover { background: rgba(244,7,86,0.15) !important; border-color: rgba(244,7,86,0.3) !important; }
+
+        .view-site-btn { transition: all 0.2s ease; }
+        .view-site-btn:hover { background: rgba(244,7,86,0.15) !important; color: #F40756 !important; }
+
+        @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.4)} }
       `}</style>
 
-      {/* SIDEBAR */}
+      {/* ── SIDEBAR ── */}
       <aside style={{
-        width: 220, background: '#f40756',
+        width: 220,
+        background: 'rgba(255,255,255,0.03)',
+        borderRight: '1px solid rgba(244,7,86,0.15)',
         display: 'flex', flexDirection: 'column',
         position: 'fixed', top: 0, left: 0, height: '100vh',
-        zIndex: 100, boxShadow: '2px 0 10px rgba(0,0,0,0.2)'
+        zIndex: 100,
+        boxShadow: '4px 0 24px rgba(0,0,0,0.3)'
       }}>
+
         {/* Logo */}
-        <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.15)' }}>
+        <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{
-              width: 38, height: 38, background: '#fff',
+              width: 38, height: 38,
+              background: 'linear-gradient(135deg, #F40756, #ff6b9d)',
               borderRadius: '50%', display: 'flex', alignItems: 'center',
-              justifyContent: 'center', fontSize: 16, fontWeight: 800, color: '#f40756'
+              justifyContent: 'center', fontSize: 16, fontWeight: 900, color: '#fff',
+              boxShadow: '0 0 16px rgba(244,7,86,0.4)'
             }}>U</div>
             <div>
-              <div style={{ color: '#fff', fontSize: 13, fontWeight: 700 }}>UNIVERSITY</div>
-              <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 10, letterSpacing: 1 }}>ADMIN PANEL</div>
+              <div style={{ color: '#fff', fontSize: 13, fontWeight: 800, letterSpacing: 1 }}>UNIVERSITY</div>
+              <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 9, letterSpacing: 2 }}>ADMIN PANEL</div>
             </div>
           </Link>
         </div>
@@ -74,10 +96,10 @@ export default function AdminLayout({ children }) {
             return (
               <Link key={item.href} href={item.href} className="nav-item" style={{
                 display: 'flex', alignItems: 'center', gap: 12,
-                padding: '11px 20px', fontSize: 14, fontWeight: 600,
-                color: '#fff',
-                background: active ? 'rgba(255,255,255,0.2)' : 'transparent',
-                borderLeft: active ? '4px solid #fff' : '4px solid transparent',
+                padding: '11px 20px', fontSize: 13, fontWeight: 600,
+                color: active ? '#fff' : 'rgba(255,255,255,0.5)',
+                background: active ? 'rgba(244,7,86,0.15)' : 'transparent',
+                borderLeft: active ? '3px solid #F40756' : '3px solid transparent',
                 transition: 'all 0.2s'
               }}>
                 <span style={{ fontSize: 16 }}>{item.icon}</span>
@@ -86,12 +108,13 @@ export default function AdminLayout({ children }) {
             )
           })}
 
-          <div style={{ margin: '1rem 20px', borderTop: '1px solid rgba(255,255,255,0.15)' }} />
+          <div style={{ margin: '1rem 20px', borderTop: '1px solid rgba(255,255,255,0.07)' }} />
 
-          <Link href="/" style={{
+          <Link href="/" className="nav-item" style={{
             display: 'flex', alignItems: 'center', gap: 12,
-            padding: '11px 20px', fontSize: 14, fontWeight: 600,
-            color: 'rgba(255,255,255,0.7)', transition: 'all 0.2s'
+            padding: '11px 20px', fontSize: 13, fontWeight: 600,
+            color: 'rgba(255,255,255,0.35)', borderLeft: '3px solid transparent',
+            transition: 'all 0.2s'
           }}>
             <span style={{ fontSize: 16 }}>🌐</span>
             View Site
@@ -99,53 +122,69 @@ export default function AdminLayout({ children }) {
         </nav>
 
         {/* User + Logout */}
-        <div style={{ padding: '1rem', borderTop: '1px solid rgba(255,255,255,0.15)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+        <div style={{ padding: '1rem', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
             <div style={{
-              width: 34, height: 34, background: 'rgba(255,255,255,0.2)',
+              width: 34, height: 34,
+              background: 'linear-gradient(135deg, #F40756, #ff6b9d)',
               borderRadius: '50%', display: 'flex', alignItems: 'center',
-              justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: 14,
-              border: '2px solid rgba(255,255,255,0.4)'
+              justifyContent: 'center', color: '#fff', fontWeight: 800, fontSize: 14,
+              boxShadow: '0 0 10px rgba(244,7,86,0.3)',
+              flexShrink: 0
             }}>{user.full_name?.charAt(0)}</div>
-            <div>
-              <div style={{ color: '#fff', fontSize: 13, fontWeight: 600 }}>{user.full_name}</div>
-              <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, textTransform: 'capitalize' }}>{user.role}</div>
+            <div style={{ overflow: 'hidden' }}>
+              <div style={{ color: '#fff', fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user.full_name}</div>
+              <div style={{ color: '#F40756', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5 }}>{user.role}</div>
             </div>
           </div>
-          <button onClick={handleLogout} style={{
-            width: '100%', padding: '8px', background: 'rgba(255,255,255,0.1)',
-            border: '1px solid rgba(255,255,255,0.2)', borderRadius: 6,
-            color: '#fff', cursor: 'pointer', fontSize: 13,
+          <button onClick={handleLogout} className="logout-btn" style={{
+            width: '100%', padding: '8px', cursor: 'pointer', fontSize: 13,
+            background: 'rgba(255,255,255,0.05)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: 8, color: 'rgba(255,255,255,0.6)',
             display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center',
+            fontWeight: 600, fontFamily: "'Inter', sans-serif"
           }}>
             🚪 Logout
           </button>
         </div>
       </aside>
 
-      {/* CONTENT */}
+      {/* ── CONTENT AREA ── */}
       <div style={{ marginLeft: 220, flex: 1, display: 'flex', flexDirection: 'column' }}>
+
         {/* Top bar */}
         <div style={{
-          background: '#fff', padding: '0 2rem', height: 60,
+          background: 'rgba(13,13,26,0.95)',
+          backdropFilter: 'blur(20px)',
+          padding: '0 2rem', height: 60,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          boxShadow: '0 1px 4px rgba(0,0,0,0.08)', position: 'sticky', top: 0, zIndex: 50
+          borderBottom: '1px solid rgba(244,7,86,0.12)',
+          position: 'sticky', top: 0, zIndex: 50,
+          boxShadow: '0 2px 20px rgba(0,0,0,0.3)'
         }}>
-          <h1 style={{ fontSize: 18, fontWeight: 700, color: '#1a1a2e' }}>
-            {navItems.find(n => n.href === pathname)?.label || 'Admin'}
-          </h1>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ fontSize: 13, color: '#888' }}>Welcome, {user.full_name}</span>
-            <Link href="/" style={{
-              background: 'f40756', color: '#fff',
-              padding: '6px 14px', borderRadius: 4,
-              fontSize: 12, fontWeight: 700
-            }}>View Site</Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: 4, height: 20, borderRadius: 2, background: 'linear-gradient(180deg, #F40756, #ff6b9d)' }} />
+            <h1 style={{ fontSize: 16, fontWeight: 800, color: '#fff', letterSpacing: 0.2 }}>
+              {navItems.find(n => n.href === pathname)?.label || 'Admin'}
+            </h1>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>
+              Welcome, <span style={{ color: 'rgba(255,255,255,0.65)', fontWeight: 600 }}>{user.full_name}</span>
+            </span>
+            <Link href="/" className="view-site-btn" style={{
+              background: 'rgba(255,255,255,0.07)',
+              color: 'rgba(255,255,255,0.55)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              padding: '6px 14px', borderRadius: 8,
+              fontSize: 12, fontWeight: 700, display: 'inline-block'
+            }}>🌐 View Site</Link>
           </div>
         </div>
 
         {/* Page content */}
-        <div style={{ padding: '2rem', flex: 1 }}>
+        <div style={{ padding: '2rem', flex: 1, background: '#0d0d1a' }}>
           {children}
         </div>
       </div>

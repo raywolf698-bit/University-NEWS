@@ -4,13 +4,13 @@ export async function getCategories() {
   const conn = await mysqlPool.getConnection();
   try {
     const [rows] = await conn.execute(`
-      SELECT c.*, 
+      SELECT c.id, c.name, c.slug, c.description, c.parent_id,
         p.name AS parent_name,
         COUNT(DISTINCT ac.article_id) AS article_count
       FROM categories c
       LEFT JOIN categories p ON p.id = c.parent_id
       LEFT JOIN article_categories ac ON ac.category_id = c.id
-      GROUP BY c.id
+      GROUP BY c.id, c.name, c.slug, c.description, c.parent_id
       ORDER BY c.name ASC
     `);
     return rows;
