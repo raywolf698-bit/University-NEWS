@@ -59,7 +59,6 @@ export default function ArticlePage() {
   const categoryColor = (type) => {
     const map = {
       news: '#F40756',
-      announcement: '#F40756',
       campus_update: '#00c47a',
       event: '#ff9500',
       research: '#29abe2',
@@ -70,7 +69,6 @@ export default function ArticlePage() {
   const categoryLabel = (type) => {
     const map = {
       news: 'NEWS',
-      announcement: 'ANNOUNCEMENT',
       campus_update: 'CAMPUS',
       event: 'EVENTS',
       research: 'RESEARCH',

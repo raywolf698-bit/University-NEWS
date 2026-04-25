@@ -10,7 +10,7 @@ export async function getCategories() {
       FROM categories c
       LEFT JOIN categories p ON p.id = c.parent_id
       LEFT JOIN article_categories ac ON ac.category_id = c.id
-      GROUP BY c.id, c.name, c.slug, c.description, c.parent_id
+      GROUP BY c.id, c.name, c.slug, c.description, c.parent_id, p.name
       ORDER BY c.name ASC
     `);
     return rows;

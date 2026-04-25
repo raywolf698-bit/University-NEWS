@@ -26,12 +26,7 @@ const features = [
     desc: 'Every faculty has its own news stream. Filter by department, discover stories relevant to your world.',
     accent: '#29abe2',
   },
-  {
-    icon: '🔍',
-    title: 'Smart Search',
-    desc: 'Find any article, event, or announcement in seconds with full-text search across the entire platform.',
-    accent: '#00c47a',
-  },
+
   {
     icon: '🏆',
     title: 'Spotlight & Hall of Fame',
