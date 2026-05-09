@@ -486,7 +486,7 @@ export default function AboutPage() {
                   color: '#fff', padding: '13px 28px', borderRadius: 10,
                   fontWeight: 700, fontSize: 14, display: 'inline-flex', alignItems: 'center', gap: 8,
                   boxShadow: '0 8px 24px rgba(244,7,86,0.35)'
-                }}>✉️ ben@unicersity.ac.th</a>
+                }}>✉️ benedict.a67@rsu.ac.th</a>
                 <Link href="/register" className="btn-spring cta-btn" style={{
                   background: 'rgba(255,255,255,0.06)',
                   color: '#fff', padding: '13px 28px', borderRadius: 10,
