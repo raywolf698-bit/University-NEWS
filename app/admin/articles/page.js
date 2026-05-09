@@ -85,9 +85,6 @@ export default function AdminArticlesPage() {
   }
 
   const handleSubmit = async () => {
-    console.log('🔥 handleSubmit called')
-    console.log('🔥 form:', JSON.stringify(form))
-
     if (!form.title.trim() || !form.content.trim()) {
       alert('Title and content are required')
       return
@@ -165,12 +162,7 @@ export default function AdminArticlesPage() {
     }
     const s = map[status] || map.draft
     return (
-      <span style={{
-        background: s.bg, color: s.color,
-        border: `1px solid ${s.border}`,
-        padding: '3px 10px', borderRadius: 999, fontSize: 11, fontWeight: 700,
-        letterSpacing: 0.4
-      }}>
+      <span style={{ background: s.bg, color: s.color, border: `1px solid ${s.border}`, padding: '3px 10px', borderRadius: 999, fontSize: 11, fontWeight: 700, letterSpacing: 0.4 }}>
         {s.label}
       </span>
     )
@@ -186,12 +178,7 @@ export default function AdminArticlesPage() {
     }
     const t = map[type] || { bg: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.4)', border: 'rgba(255,255,255,0.1)' }
     return (
-      <span style={{
-        background: t.bg, color: t.color,
-        border: `1px solid ${t.border}`,
-        padding: '3px 10px', borderRadius: 999, fontSize: 11, fontWeight: 700,
-        letterSpacing: 0.4
-      }}>
+      <span style={{ background: t.bg, color: t.color, border: `1px solid ${t.border}`, padding: '3px 10px', borderRadius: 999, fontSize: 11, fontWeight: 700, letterSpacing: 0.4 }}>
         {type?.replace('_', ' ').toUpperCase()}
       </span>
     )
@@ -220,23 +207,86 @@ export default function AdminArticlesPage() {
         .primary-btn:active { transform: scale(0.97); }
 
         input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.2); }
-        input:focus, textarea:focus, select:focus { border-color: rgba(244,7,86,0.5) !important; box-shadow: 0 0 0 3px rgba(244,7,86,0.1) !important; }
+        input:focus, textarea:focus, select:focus { border-color: rgba(244,7,86,0.5) !important; box-shadow: 0 0 0 3px rgba(244,7,86,0.1) !important; outline: none; }
 
         select option { background: #1a1a2e; color: #fff; }
 
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── RESPONSIVE ── */
+
+        /* Top bar */
+        .page-topbar { flex-direction: row; align-items: center; }
+        .page-title { font-size: 24px; }
+
+        /* Form grid: 2 cols → 1 col on mobile */
+        .form-grid { grid-template-columns: 1fr 1fr; }
+        .form-full { grid-column: 1 / -1; }
+
+        /* Filter buttons */
+        .filter-row { flex-wrap: wrap; }
+
+        /* Table scroll */
+        .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+        /* Hide less critical table cols */
+        .col-author { display: table-cell; }
+        .col-date   { display: table-cell; }
+        .col-type   { display: table-cell; }
+        .col-slug   { display: block; }
+
+        /* Action buttons in table */
+        .table-actions { flex-direction: row; }
+
+        /* Page padding */
+        .page-wrap { padding: 2rem; }
+
+        /* ── TABLET (≤ 820px) ── */
+        @media (max-width: 820px) {
+          .col-author { display: none !important; }
+          .col-date   { display: none !important; }
+          .table-scroll table { min-width: 420px; }
+        }
+
+        /* ── MOBILE (≤ 600px) ── */
+        @media (max-width: 600px) {
+          .page-wrap { padding: 1rem !important; }
+
+          .page-topbar { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; margin-bottom: 1.25rem !important; }
+          .page-title { font-size: 20px !important; }
+          .new-article-btn { width: 100% !important; justify-content: center !important; }
+
+          .form-panel { padding: 1.25rem !important; }
+          .form-grid { grid-template-columns: 1fr !important; }
+          .form-full { grid-column: 1 !important; }
+
+          .filter-row { gap: 6px !important; }
+          .filter-btn { font-size: 11px !important; padding: 6px 14px !important; }
+
+          .col-type   { display: none !important; }
+          .col-slug   { display: none !important; }
+          th, td { padding: 10px 10px !important; }
+
+          .table-actions { flex-direction: column !important; gap: 4px !important; }
+          .table-actions a, .table-actions button { width: 100% !important; text-align: center !important; justify-content: center !important; }
+
+          .form-btns { flex-direction: column !important; }
+          .form-btns button { width: 100% !important; justify-content: center !important; }
+        }
+
+        /* ── SMALL MOBILE (≤ 400px) ── */
+        @media (max-width: 400px) {
+          .page-title { font-size: 18px !important; }
+        }
       `}</style>
 
       {/* ── TOP BAR ── */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+      <div className="page-topbar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-            <div style={{
-              width: 8, height: 32, borderRadius: 4,
-              background: 'linear-gradient(180deg, #F40756, #ff6b9d)'
-            }} />
-            <h1 style={{ fontSize: 24, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>
+            <div style={{ width: 8, height: 32, borderRadius: 4, background: 'linear-gradient(180deg, #F40756, #ff6b9d)' }} />
+            <h1 className="page-title" style={{ fontSize: 24, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>
               Manage Articles
             </h1>
           </div>
@@ -245,12 +295,10 @@ export default function AdminArticlesPage() {
           </p>
         </div>
         <button
-          className="primary-btn"
+          className="primary-btn new-article-btn"
           onClick={() => { setEditingArticle(null); setShowForm(!showForm) }}
           style={{
-            background: showForm
-              ? 'rgba(255,255,255,0.08)'
-              : 'linear-gradient(135deg, #F40756, #ff6b9d)',
+            background: showForm ? 'rgba(255,255,255,0.08)' : 'linear-gradient(135deg, #F40756, #ff6b9d)',
             color: '#fff',
             border: showForm ? '1px solid rgba(255,255,255,0.15)' : 'none',
             padding: '10px 22px', borderRadius: 10,
@@ -265,7 +313,7 @@ export default function AdminArticlesPage() {
 
       {/* ── CREATE / EDIT FORM ── */}
       {showForm && (
-        <div style={{
+        <div className="form-panel" style={{
           background: 'rgba(255,255,255,0.03)',
           border: '1px solid rgba(244,7,86,0.35)',
           borderRadius: 16, padding: '2rem', marginBottom: '2rem',
@@ -279,9 +327,9 @@ export default function AdminArticlesPage() {
             {editingArticle ? 'Edit Article' : 'Create New Article'}
           </h2>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+          <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
             {/* Title */}
-            <div style={{ gridColumn: '1 / -1' }}>
+            <div className="form-full" style={{ gridColumn: '1 / -1' }}>
               <label style={labelStyle}>Title *</label>
               <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
                 placeholder="Enter article title..." style={inputStyle} />
@@ -332,7 +380,7 @@ export default function AdminArticlesPage() {
             </div>
 
             {/* Excerpt */}
-            <div style={{ gridColumn: '1 / -1' }}>
+            <div className="form-full" style={{ gridColumn: '1 / -1' }}>
               <label style={labelStyle}>Excerpt (short summary)</label>
               <textarea value={form.excerpt} onChange={e => setForm({ ...form, excerpt: e.target.value })}
                 placeholder="Brief summary of the article..." rows={2}
@@ -340,7 +388,7 @@ export default function AdminArticlesPage() {
             </div>
 
             {/* Content */}
-            <div style={{ gridColumn: '1 / -1' }}>
+            <div className="form-full" style={{ gridColumn: '1 / -1' }}>
               <label style={labelStyle}>Content *</label>
               <textarea value={form.content} onChange={e => setForm({ ...form, content: e.target.value })}
                 placeholder="Write the full article content here..." rows={10}
@@ -353,12 +401,12 @@ export default function AdminArticlesPage() {
             <div style={{ marginBottom: '1.25rem' }}>
               <label style={labelStyle}>Cover Preview</label>
               <img src={form.cover_image} alt="cover"
-                style={{ height: 120, borderRadius: 10, objectFit: 'cover', border: '1px solid rgba(255,255,255,0.1)' }}
+                style={{ height: 120, maxWidth: '100%', borderRadius: 10, objectFit: 'cover', border: '1px solid rgba(255,255,255,0.1)' }}
                 onError={e => e.target.style.display = 'none'} />
             </div>
           )}
 
-          <div style={{ display: 'flex', gap: 10 }}>
+          <div className="form-btns" style={{ display: 'flex', gap: 10 }}>
             <button
               className="primary-btn"
               onClick={handleSubmit}
@@ -369,7 +417,8 @@ export default function AdminArticlesPage() {
                 padding: '11px 28px', borderRadius: 10, fontWeight: 700,
                 fontSize: 14, cursor: saving ? 'not-allowed' : 'pointer',
                 opacity: saving ? 0.7 : 1,
-                boxShadow: '0 4px 20px rgba(244,7,86,0.4)'
+                boxShadow: '0 4px 20px rgba(244,7,86,0.4)',
+                display: 'flex', alignItems: 'center', gap: 6
               }}
             >
               {saving ? 'Saving...' : editingArticle ? '💾  Save Changes' : '🚀  Publish Article'}
@@ -389,13 +438,11 @@ export default function AdminArticlesPage() {
       )}
 
       {/* ── FILTER ── */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: '1.25rem', flexWrap: 'wrap' }}>
+      <div className="filter-row" style={{ display: 'flex', gap: 8, marginBottom: '1.25rem', flexWrap: 'wrap' }}>
         {[['', 'All'], ['published', 'Published'], ['draft', 'Draft'], ['review', 'Pending']].map(([val, label]) => (
           <button key={val} className="filter-btn" onClick={() => setFilterStatus(val)} style={{
             padding: '7px 18px', borderRadius: 20, border: 'none', cursor: 'pointer',
-            background: filterStatus === val
-              ? 'linear-gradient(135deg, #F40756, #ff6b9d)'
-              : 'rgba(255,255,255,0.07)',
+            background: filterStatus === val ? 'linear-gradient(135deg, #F40756, #ff6b9d)' : 'rgba(255,255,255,0.07)',
             color: filterStatus === val ? '#fff' : 'rgba(255,255,255,0.5)',
             fontWeight: 700, fontSize: 12, letterSpacing: 0.5,
             boxShadow: filterStatus === val ? '0 4px 15px rgba(244,7,86,0.35)' : 'none',
@@ -411,11 +458,7 @@ export default function AdminArticlesPage() {
       }}>
         {loading ? (
           <div style={{ textAlign: 'center', padding: '4rem', color: 'rgba(255,255,255,0.3)' }}>
-            <div style={{
-              width: 36, height: 36, border: '3px solid rgba(244,7,86,0.2)',
-              borderTopColor: '#F40756', borderRadius: '50%',
-              margin: '0 auto 14px', animation: 'spin 0.8s linear infinite'
-            }} />
+            <div style={{ width: 36, height: 36, border: '3px solid rgba(244,7,86,0.2)', borderTopColor: '#F40756', borderRadius: '50%', margin: '0 auto 14px', animation: 'spin 0.8s linear infinite' }} />
             Loading articles...
           </div>
         ) : articles.length === 0 ? (
@@ -424,69 +467,67 @@ export default function AdminArticlesPage() {
             <p style={{ fontSize: 15 }}>No articles yet. Click <strong style={{ color: '#F40756' }}>+ New Article</strong> to create one.</p>
           </div>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                {['Title', 'Type', 'Author', 'Date', 'Status', 'Actions'].map(h => (
-                  <th key={h} style={{
-                    padding: '14px 16px', textAlign: 'left',
-                    fontSize: 11, fontWeight: 700,
-                    color: 'rgba(255,255,255,0.3)',
-                    letterSpacing: 1, textTransform: 'uppercase',
-                    background: 'rgba(255,255,255,0.02)'
-                  }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {articles.map(a => (
-                <tr key={a.id} className="row-hover" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                  <td style={{ padding: '14px 16px', maxWidth: 280 }}>
-                    <div style={{
-                      whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                      maxWidth: 260, fontSize: 14, fontWeight: 600, color: '#fff'
-                    }}>
-                      {a.title}
-                    </div>
-                    <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 11, marginTop: 3 }}>/{a.slug}</div>
-                  </td>
-                  <td style={{ padding: '14px 16px' }}>{typeBadge(a.article_type)}</td>
-                  <td style={{ padding: '14px 16px', fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>{a.author_name}</td>
-                  <td style={{ padding: '14px 16px', fontSize: 12, color: 'rgba(255,255,255,0.35)', whiteSpace: 'nowrap' }}>{formatDate(a.published_at)}</td>
-                  <td style={{ padding: '14px 16px' }}>{statusBadge(a.status)}</td>
-                  <td style={{ padding: '14px 16px' }}>
-                    <div style={{ display: 'flex', gap: 6 }}>
-                      <Link href={`/articles/${a.slug}`} className="action-btn" style={{
-                        background: 'rgba(255,255,255,0.07)',
-                        color: 'rgba(255,255,255,0.6)',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        padding: '5px 11px', borderRadius: 7,
-                        fontSize: 12, fontWeight: 600, display: 'inline-block'
-                      }}>👁 View</Link>
-                      <button onClick={() => handleEdit(a)} className="action-btn" style={{
-                        background: 'rgba(255,149,0,0.12)',
-                        color: '#ff9500',
-                        border: '1px solid rgba(255,149,0,0.25)',
-                        padding: '5px 11px', borderRadius: 7,
-                        fontSize: 12, fontWeight: 600, cursor: 'pointer'
-                      }}>✏️ Edit</button>
-                      <button onClick={() => handleDelete(a.id)} className="action-btn" style={{
-                        background: 'rgba(244,7,86,0.1)',
-                        color: '#F40756',
-                        border: '1px solid rgba(244,7,86,0.25)',
-                        padding: '5px 11px', borderRadius: 7,
-                        fontSize: 12, fontWeight: 600, cursor: 'pointer'
-                      }}>🗑 Delete</button>
-                    </div>
-                  </td>
+          <div className="table-scroll">
+            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 360 }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                  <th style={thStyle}>Title</th>
+                  <th className="col-type" style={thStyle}>Type</th>
+                  <th className="col-author" style={thStyle}>Author</th>
+                  <th className="col-date" style={thStyle}>Date</th>
+                  <th style={thStyle}>Status</th>
+                  <th style={thStyle}>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {articles.map(a => (
+                  <tr key={a.id} className="row-hover" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                    <td style={{ padding: '14px 16px', maxWidth: 240 }}>
+                      <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 220, fontSize: 14, fontWeight: 600, color: '#fff' }}>
+                        {a.title}
+                      </div>
+                      <div className="col-slug" style={{ color: 'rgba(255,255,255,0.25)', fontSize: 11, marginTop: 3 }}>/{a.slug}</div>
+                    </td>
+                    <td className="col-type" style={{ padding: '14px 16px' }}>{typeBadge(a.article_type)}</td>
+                    <td className="col-author" style={{ padding: '14px 16px', fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>{a.author_name}</td>
+                    <td className="col-date" style={{ padding: '14px 16px', fontSize: 12, color: 'rgba(255,255,255,0.35)', whiteSpace: 'nowrap' }}>{formatDate(a.published_at)}</td>
+                    <td style={{ padding: '14px 16px' }}>{statusBadge(a.status)}</td>
+                    <td style={{ padding: '14px 10px' }}>
+                      <div className="table-actions" style={{ display: 'flex', gap: 6 }}>
+                        <Link href={`/articles/${a.slug}`} className="action-btn" style={{
+                          background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.6)',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          padding: '5px 11px', borderRadius: 7, fontSize: 12, fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 4
+                        }}>👁 View</Link>
+                        <button onClick={() => handleEdit(a)} className="action-btn" style={{
+                          background: 'rgba(255,149,0,0.12)', color: '#ff9500',
+                          border: '1px solid rgba(255,149,0,0.25)',
+                          padding: '5px 11px', borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: 'pointer'
+                        }}>✏️ Edit</button>
+                        <button onClick={() => handleDelete(a.id)} className="action-btn" style={{
+                          background: 'rgba(244,7,86,0.1)', color: '#F40756',
+                          border: '1px solid rgba(244,7,86,0.25)',
+                          padding: '5px 11px', borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: 'pointer'
+                        }}>🗑</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>
   )
+}
+
+const thStyle = {
+  padding: '14px 16px', textAlign: 'left',
+  fontSize: 11, fontWeight: 700,
+  color: 'rgba(255,255,255,0.3)',
+  letterSpacing: 1, textTransform: 'uppercase',
+  background: 'rgba(255,255,255,0.02)'
 }
 
 const labelStyle = {

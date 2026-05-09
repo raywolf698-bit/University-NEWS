@@ -96,10 +96,59 @@ export default function AdminDashboard() {
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes spin { to { transform: rotate(360deg); } }
         .fade-in { animation: fadeInUp 0.4s ease forwards; }
+
+        /* ── RESPONSIVE ── */
+
+        /* Stat grid: 4 cols → 2 cols → 2 cols */
+        .stat-grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+        /* Articles + Users: side by side → stacked */
+        .two-col-grid { grid-template-columns: 1fr 1fr; }
+
+        /* Table scrollable */
+        .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+        /* Quick actions */
+        .quick-actions { flex-wrap: wrap; }
+
+        /* Hide date col on small screens */
+        .col-date { display: table-cell; }
+        .col-faculty-sm { display: table-cell; }
+
+        /* ── TABLET (≤ 860px) ── */
+        @media (max-width: 860px) {
+          .stat-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
+          .two-col-grid { grid-template-columns: 1fr !important; }
+        }
+
+        /* ── MOBILE (≤ 560px) ── */
+        @media (max-width: 560px) {
+          .stat-grid-4 { grid-template-columns: repeat(2, 1fr) !important; gap: 0.65rem !important; }
+          .stat-card { padding: 1rem 0.9rem !important; }
+          .stat-num { font-size: 26px !important; }
+          .stat-lbl { font-size: 9px !important; }
+
+          .col-date { display: none !important; }
+          .col-faculty-sm { display: none !important; }
+
+          th, td { padding: 9px 10px !important; }
+
+          .quick-actions { flex-direction: column !important; }
+          .quick-actions a { width: 100% !important; text-align: center !important; }
+
+          .section-header { padding: 0.85rem 1rem !important; }
+          .section-header span { font-size: 13px !important; }
+        }
+
+        /* ── SMALL MOBILE (≤ 380px) ── */
+        @media (max-width: 380px) {
+          .stat-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
+          .stat-num { font-size: 22px !important; }
+        }
       `}</style>
 
       {/* ── STAT CARDS ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
+      <div className="stat-grid-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
         {[
           { label: 'Total Articles', value: stats.total,     icon: '📰', accent: '#F40756', glow: 'rgba(244,7,86,0.15)' },
           { label: 'Published',      value: stats.published, icon: '✅', accent: '#00c47a', glow: 'rgba(0,196,122,0.12)' },
@@ -115,18 +164,18 @@ export default function AdminDashboard() {
             animationDelay: `${i * 0.07}s`
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-              <span style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.35)', letterSpacing: 1 }}>
+              <span className="stat-lbl" style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.35)', letterSpacing: 1 }}>
                 {s.label.toUpperCase()}
               </span>
               <span style={{ fontSize: 20 }}>{s.icon}</span>
             </div>
-            <div style={{ fontSize: 34, fontWeight: 900, color: s.accent }}>{s.value}</div>
+            <div className="stat-num" style={{ fontSize: 34, fontWeight: 900, color: s.accent }}>{s.value}</div>
           </div>
         ))}
       </div>
 
       {/* ── ARTICLES + USERS ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
+      <div className="two-col-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
 
         {/* RECENT ARTICLES */}
         <div style={{
@@ -135,8 +184,7 @@ export default function AdminDashboard() {
           borderRadius: 16, overflow: 'hidden',
           boxShadow: '0 4px 24px rgba(0,0,0,0.2)'
         }}>
-          {/* Header */}
-          <div style={{
+          <div className="section-header" style={{
             background: 'linear-gradient(135deg, #F40756, #ff6b9d)',
             padding: '1rem 1.5rem',
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -165,30 +213,32 @@ export default function AdminDashboard() {
               <Link href="/admin/articles" style={{ color: '#F40756', fontWeight: 700, fontSize: 13 }}>+ Create Article</Link>
             </div>
           ) : (
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-                  {['Title', 'Date', 'Status'].map(h => (
-                    <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.3)', letterSpacing: 1 }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {articles.map(a => (
-                  <tr key={a.id} className="row-hover" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                    <td style={{ padding: '11px 16px', maxWidth: 200 }}>
-                      <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 180, fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>
-                        {a.title}
-                      </div>
-                    </td>
-                    <td style={{ padding: '11px 16px', fontSize: 12, color: 'rgba(255,255,255,0.3)', whiteSpace: 'nowrap' }}>
-                      {formatDate(a.published_at)}
-                    </td>
-                    <td style={{ padding: '11px 16px' }}>{statusBadge(a.status)}</td>
+            <div className="table-scroll">
+              <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 300 }}>
+                <thead>
+                  <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+                    <th style={{ padding: '10px 16px', textAlign: 'left', fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.3)', letterSpacing: 1 }}>Title</th>
+                    <th className="col-date" style={{ padding: '10px 16px', textAlign: 'left', fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.3)', letterSpacing: 1 }}>Date</th>
+                    <th style={{ padding: '10px 16px', textAlign: 'left', fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.3)', letterSpacing: 1 }}>Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {articles.map(a => (
+                    <tr key={a.id} className="row-hover" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                      <td style={{ padding: '11px 16px', maxWidth: 200 }}>
+                        <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 180, fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>
+                          {a.title}
+                        </div>
+                      </td>
+                      <td className="col-date" style={{ padding: '11px 16px', fontSize: 12, color: 'rgba(255,255,255,0.3)', whiteSpace: 'nowrap' }}>
+                        {formatDate(a.published_at)}
+                      </td>
+                      <td style={{ padding: '11px 16px' }}>{statusBadge(a.status)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
 
@@ -199,8 +249,7 @@ export default function AdminDashboard() {
           borderRadius: 16, overflow: 'hidden',
           boxShadow: '0 4px 24px rgba(0,0,0,0.2)'
         }}>
-          {/* Header */}
-          <div style={{
+          <div className="section-header" style={{
             background: 'rgba(255,255,255,0.05)',
             borderBottom: '1px solid rgba(255,255,255,0.08)',
             padding: '1rem 1.5rem',
@@ -223,38 +272,40 @@ export default function AdminDashboard() {
           ) : users.length === 0 ? (
             <div style={{ padding: '3rem', textAlign: 'center', color: 'rgba(255,255,255,0.25)', fontSize: 13 }}>No users found</div>
           ) : (
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-                  {['Name', 'Faculty', 'Role'].map(h => (
-                    <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.3)', letterSpacing: 1 }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {users.map(u => (
-                  <tr key={u.id} className="row-hover" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                    <td style={{ padding: '11px 16px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-                        <div style={{
-                          width: 30, height: 30,
-                          background: 'linear-gradient(135deg, #F40756, #ff6b9d)',
-                          borderRadius: '50%', display: 'flex', alignItems: 'center',
-                          justifyContent: 'center', color: '#fff',
-                          fontSize: 12, fontWeight: 800, flexShrink: 0,
-                          boxShadow: '0 0 8px rgba(244,7,86,0.3)'
-                        }}>
-                          {u.full_name?.charAt(0)?.toUpperCase()}
-                        </div>
-                        <span style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>{u.full_name}</span>
-                      </div>
-                    </td>
-                    <td style={{ padding: '11px 16px', fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>{u.faculty || '-'}</td>
-                    <td style={{ padding: '11px 16px' }}>{roleBadge(u.role)}</td>
+            <div className="table-scroll">
+              <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 280 }}>
+                <thead>
+                  <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+                    <th style={{ padding: '10px 16px', textAlign: 'left', fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.3)', letterSpacing: 1 }}>Name</th>
+                    <th className="col-faculty-sm" style={{ padding: '10px 16px', textAlign: 'left', fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.3)', letterSpacing: 1 }}>Faculty</th>
+                    <th style={{ padding: '10px 16px', textAlign: 'left', fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.3)', letterSpacing: 1 }}>Role</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {users.map(u => (
+                    <tr key={u.id} className="row-hover" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                      <td style={{ padding: '11px 16px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                          <div style={{
+                            width: 30, height: 30,
+                            background: 'linear-gradient(135deg, #F40756, #ff6b9d)',
+                            borderRadius: '50%', display: 'flex', alignItems: 'center',
+                            justifyContent: 'center', color: '#fff',
+                            fontSize: 12, fontWeight: 800, flexShrink: 0,
+                            boxShadow: '0 0 8px rgba(244,7,86,0.3)'
+                          }}>
+                            {u.full_name?.charAt(0)?.toUpperCase()}
+                          </div>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>{u.full_name}</span>
+                        </div>
+                      </td>
+                      <td className="col-faculty-sm" style={{ padding: '11px 16px', fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>{u.faculty || '-'}</td>
+                      <td style={{ padding: '11px 16px' }}>{roleBadge(u.role)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </div>
@@ -270,7 +321,7 @@ export default function AdminDashboard() {
           <div style={{ width: 4, height: 18, borderRadius: 2, background: 'linear-gradient(180deg, #F40756, #ff6b9d)' }} />
           <h3 style={{ fontSize: 14, fontWeight: 800, color: '#fff', letterSpacing: 0.3 }}>Quick Actions</h3>
         </div>
-        <div style={{ display: 'flex', gap: 10 }}>
+        <div className="quick-actions" style={{ display: 'flex', gap: 10 }}>
           <Link href="/admin/articles" className="action-link" style={{
             background: 'linear-gradient(135deg, #F40756, #ff6b9d)',
             color: '#fff', padding: '10px 22px', borderRadius: 10,

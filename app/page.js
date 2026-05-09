@@ -148,7 +148,7 @@ export default function HomePage() {
         .news-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
         .hall-flex { display: flex; gap: 2rem; align-items: center; }
         .hall-cards { display: flex; gap: 1rem; flex: 1; overflow-x: auto; }
-        .hall-text { flex: 0 0 220px; }
+        .hall-text { flex: 0 0 220px; } 
         .search-bar { display: flex !important; }
         .desktop-nav { display: flex !important; }
         .desktop-auth { display: flex !important; }

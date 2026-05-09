@@ -100,10 +100,61 @@ export default function AdminUsersPage() {
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes spin { to { transform: rotate(360deg); } }
         .fade-in { animation: fadeInUp 0.4s ease forwards; }
+
+        /* ── RESPONSIVE ── */
+
+        /* Stat grid: 3 cols → 1 row on mobile */
+        .stat-grid { grid-template-columns: repeat(3, 1fr); }
+
+        /* Filters bar */
+        .filters-bar { flex-direction: row; align-items: center; }
+        .filter-btns { flex-wrap: nowrap; }
+
+        /* Table: scrollable on small screens */
+        .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+        /* Hide less-critical columns on mobile */
+        .col-faculty { display: table-cell; }
+        .col-joined  { display: table-cell; }
+
+        /* ── TABLET (≤ 768px) ── */
+        @media (max-width: 768px) {
+          .stat-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 0.65rem !important; }
+          .filters-bar { flex-wrap: wrap; gap: 8px !important; }
+          .col-faculty { display: none !important; }
+        }
+
+        /* ── MOBILE (≤ 560px) ── */
+        @media (max-width: 560px) {
+          .stat-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 0.5rem !important; }
+          .stat-card { padding: 0.9rem 0.75rem !important; }
+          .stat-value { font-size: 24px !important; }
+          .stat-label { font-size: 9px !important; }
+
+          .topbar { flex-direction: column; align-items: flex-start !important; gap: 4px !important; margin-bottom: 1.25rem !important; }
+          .topbar h1 { font-size: 20px !important; }
+
+          .filters-bar { flex-direction: column !important; align-items: stretch !important; }
+          .filter-btns { display: flex; gap: 6px; }
+          .filter-btns button { flex: 1; font-size: 11px !important; padding: 8px 10px !important; }
+
+          .col-faculty { display: none !important; }
+          .col-joined  { display: none !important; }
+
+          th, td { padding: 10px 10px !important; }
+          .user-name-text { font-size: 12px !important; }
+          .user-avatar { width: 28px !important; height: 28px !important; font-size: 12px !important; }
+        }
+
+        /* ── SMALL MOBILE (≤ 380px) ── */
+        @media (max-width: 380px) {
+          .stat-grid { grid-template-columns: repeat(3, 1fr) !important; }
+          .stat-value { font-size: 20px !important; }
+        }
       `}</style>
 
       {/* TOP BAR */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.75rem' }} className="fade-in">
+      <div className="topbar fade-in" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.75rem' }}>
         <div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(244,7,86,0.12)', border: '1px solid rgba(244,7,86,0.25)', color: '#F40756', fontSize: 10, fontWeight: 800, padding: '3px 12px', borderRadius: 20, letterSpacing: 1, marginBottom: 10 }}>
             USER MANAGEMENT
@@ -114,7 +165,7 @@ export default function AdminUsersPage() {
       </div>
 
       {/* STAT CARDS */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1.5rem' }}>
+      <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1.5rem' }}>
         {[
           { label: 'Total Users', value: counts.all,     accent: '#F40756', icon: '👥', glow: 'rgba(244,7,86,0.15)' },
           { label: 'Admins',      value: counts.admin,   accent: '#ff6b9d', icon: '🛡️', glow: 'rgba(255,107,157,0.12)' },
@@ -129,16 +180,16 @@ export default function AdminUsersPage() {
             animationDelay: `${i * 0.07}s`
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-              <span style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.35)', letterSpacing: 1 }}>{s.label.toUpperCase()}</span>
+              <span className="stat-label" style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.35)', letterSpacing: 1 }}>{s.label.toUpperCase()}</span>
               <span style={{ fontSize: 20 }}>{s.icon}</span>
             </div>
-            <div style={{ fontSize: 32, fontWeight: 900, color: s.accent }}>{s.value}</div>
+            <div className="stat-value" style={{ fontSize: 32, fontWeight: 900, color: s.accent }}>{s.value}</div>
           </div>
         ))}
       </div>
 
       {/* FILTERS */}
-      <div style={{ display: 'flex', gap: 10, marginBottom: '1.25rem', alignItems: 'center' }}>
+      <div className="filters-bar" style={{ display: 'flex', gap: 10, marginBottom: '1.25rem', alignItems: 'center' }}>
         <div style={{ flex: 1, position: 'relative' }}>
           <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 14, pointerEvents: 'none' }}>🔍</span>
           <input
@@ -153,7 +204,7 @@ export default function AdminUsersPage() {
             }}
           />
         </div>
-        <div style={{ display: 'flex', gap: 6 }}>
+        <div className="filter-btns" style={{ display: 'flex', gap: 6 }}>
           {[['', 'All'], ['admin', 'Admin'], ['student', 'Student']].map(([val, label]) => (
             <button key={val} onClick={() => setFilterRole(val)} className="filter-btn" style={{
               padding: '9px 18px', borderRadius: 20, border: 'none', cursor: 'pointer',
@@ -184,82 +235,83 @@ export default function AdminUsersPage() {
             <p style={{ fontSize: 14 }}>No users found</p>
           </div>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ background: 'rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-                {['User', 'Email', 'Faculty', 'Role', 'Joined', 'Actions'].map(h => (
-                  <th key={h} style={{
-                    padding: '13px 16px', textAlign: 'left',
-                    fontSize: 10, fontWeight: 800,
-                    color: 'rgba(255,255,255,0.35)', letterSpacing: 1
-                  }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map(u => (
-                <tr key={u.id} className="user-row" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                  {/* User */}
-                  <td style={{ padding: '13px 16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div style={{
-                        width: 36, height: 36,
-                        background: 'linear-gradient(135deg, #F40756, #ff6b9d)',
-                        borderRadius: '50%', display: 'flex', alignItems: 'center',
-                        justifyContent: 'center', color: '#fff', fontWeight: 800,
-                        fontSize: 14, flexShrink: 0,
-                        boxShadow: '0 0 10px rgba(244,7,86,0.3)'
-                      }}>
-                        {u.full_name?.charAt(0)?.toUpperCase()}
-                      </div>
-                      <span style={{ fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.9)' }}>{u.full_name}</span>
-                    </div>
-                  </td>
-                  {/* Email */}
-                  <td style={{ padding: '13px 16px', fontSize: 13, color: 'rgba(255,255,255,0.45)' }}>{u.email}</td>
-                  {/* Faculty */}
-                  <td style={{ padding: '13px 16px', fontSize: 13, color: 'rgba(255,255,255,0.35)' }}>{u.faculty || '-'}</td>
-                  {/* Role */}
-                  <td style={{ padding: '13px 16px' }}>
-                    <select
-                      value={u.role}
-                      onChange={e => handleRoleChange(u.id, e.target.value)}
-                      disabled={saving === u.id}
-                      style={{
-                        padding: '6px 12px', borderRadius: 8,
-                        border: '1.5px solid rgba(255,255,255,0.12)',
-                        fontSize: 12, fontWeight: 700, cursor: 'pointer',
-                        background: u.role === 'admin'
-                          ? 'rgba(244,7,86,0.15)'
-                          : 'rgba(255,255,255,0.06)',
-                        color: u.role === 'admin' ? '#F40756' : 'rgba(255,255,255,0.6)',
-                        opacity: saving === u.id ? 0.5 : 1,
-                        transition: 'all 0.2s'
-                      }}
-                    >
-                      <option value="student">Student</option>
-                      <option value="admin">Admin</option>
-                    </select>
-                  </td>
-                  {/* Joined */}
-                  <td style={{ padding: '13px 16px', fontSize: 12, color: 'rgba(255,255,255,0.25)', whiteSpace: 'nowrap' }}>
-                    📅 {formatDate(u.created_at)}
-                  </td>
-                  {/* Actions */}
-                  <td style={{ padding: '13px 16px' }}>
-                    <button onClick={() => handleDelete(u.id, u.full_name)} className="delete-btn" style={{
-                      background: 'rgba(244,7,86,0.12)',
-                      color: '#F40756',
-                      padding: '6px 14px', borderRadius: 8,
-                      fontSize: 12, fontWeight: 700,
-                      border: '1px solid rgba(244,7,86,0.2)',
-                      cursor: 'pointer'
-                    }}>🗑 Delete</button>
-                  </td>
+          <div className="table-wrap">
+            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 480 }}>
+              <thead>
+                <tr style={{ background: 'rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+                  <th style={{ padding: '13px 16px', textAlign: 'left', fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.35)', letterSpacing: 1 }}>User</th>
+                  <th style={{ padding: '13px 16px', textAlign: 'left', fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.35)', letterSpacing: 1 }}>Email</th>
+                  <th className="col-faculty" style={{ padding: '13px 16px', textAlign: 'left', fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.35)', letterSpacing: 1 }}>Faculty</th>
+                  <th style={{ padding: '13px 16px', textAlign: 'left', fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.35)', letterSpacing: 1 }}>Role</th>
+                  <th className="col-joined" style={{ padding: '13px 16px', textAlign: 'left', fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.35)', letterSpacing: 1 }}>Joined</th>
+                  <th style={{ padding: '13px 16px', textAlign: 'left', fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.35)', letterSpacing: 1 }}>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filtered.map(u => (
+                  <tr key={u.id} className="user-row" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                    {/* User */}
+                    <td style={{ padding: '13px 16px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div className="user-avatar" style={{
+                          width: 36, height: 36,
+                          background: 'linear-gradient(135deg, #F40756, #ff6b9d)',
+                          borderRadius: '50%', display: 'flex', alignItems: 'center',
+                          justifyContent: 'center', color: '#fff', fontWeight: 800,
+                          fontSize: 14, flexShrink: 0,
+                          boxShadow: '0 0 10px rgba(244,7,86,0.3)'
+                        }}>
+                          {u.full_name?.charAt(0)?.toUpperCase()}
+                        </div>
+                        <span className="user-name-text" style={{ fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.9)' }}>{u.full_name}</span>
+                      </div>
+                    </td>
+                    {/* Email */}
+                    <td style={{ padding: '13px 16px', fontSize: 13, color: 'rgba(255,255,255,0.45)' }}>{u.email}</td>
+                    {/* Faculty */}
+                    <td className="col-faculty" style={{ padding: '13px 16px', fontSize: 13, color: 'rgba(255,255,255,0.35)' }}>{u.faculty || '-'}</td>
+                    {/* Role */}
+                    <td style={{ padding: '13px 16px' }}>
+                      <select
+                        value={u.role}
+                        onChange={e => handleRoleChange(u.id, e.target.value)}
+                        disabled={saving === u.id}
+                        style={{
+                          padding: '6px 12px', borderRadius: 8,
+                          border: '1.5px solid rgba(255,255,255,0.12)',
+                          fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                          background: u.role === 'admin'
+                            ? 'rgba(244,7,86,0.15)'
+                            : 'rgba(255,255,255,0.06)',
+                          color: u.role === 'admin' ? '#F40756' : 'rgba(255,255,255,0.6)',
+                          opacity: saving === u.id ? 0.5 : 1,
+                          transition: 'all 0.2s'
+                        }}
+                      >
+                        <option value="student">Student</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                    </td>
+                    {/* Joined */}
+                    <td className="col-joined" style={{ padding: '13px 16px', fontSize: 12, color: 'rgba(255,255,255,0.25)', whiteSpace: 'nowrap' }}>
+                      📅 {formatDate(u.created_at)}
+                    </td>
+                    {/* Actions */}
+                    <td style={{ padding: '13px 16px' }}>
+                      <button onClick={() => handleDelete(u.id, u.full_name)} className="delete-btn" style={{
+                        background: 'rgba(244,7,86,0.12)',
+                        color: '#F40756',
+                        padding: '6px 14px', borderRadius: 8,
+                        fontSize: 12, fontWeight: 700,
+                        border: '1px solid rgba(244,7,86,0.2)',
+                        cursor: 'pointer'
+                      }}>🗑 Delete</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

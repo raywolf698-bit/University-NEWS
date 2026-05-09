@@ -14,6 +14,7 @@ export default function ArticlePage() {
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
   const [search, setSearch] = useState('')
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const handleSearch = (e) => {
     e.preventDefault()
@@ -31,13 +32,8 @@ export default function ArticlePage() {
       const res = await fetch(`/api/articles?status=published&limit=50`)
       const data = await res.json()
       const found = (data.data || []).find(a => a.slug === slug)
-
-      if (!found) {
-        setNotFound(true)
-        return
-      }
+      if (!found) { setNotFound(true); return }
       setArticle(found)
-
       const rel = await fetch(`/api/articles?status=published&article_type=${found.article_type}&limit=4`)
       const relData = await rel.json()
       setRelated((relData.data || []).filter(a => a.slug !== slug).slice(0, 3))
@@ -51,28 +47,16 @@ export default function ArticlePage() {
 
   const formatDate = (d) => {
     if (!d) return ''
-    return new Date(d).toLocaleDateString('en-US', {
-      year: 'numeric', month: 'long', day: 'numeric'
-    })
+    return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
   }
 
   const categoryColor = (type) => {
-    const map = {
-      news: '#F40756',
-      campus_update: '#00c47a',
-      event: '#ff9500',
-      research: '#29abe2',
-    }
+    const map = { news: '#F40756', campus_update: '#00c47a', event: '#ff9500', research: '#29abe2' }
     return map[type] || '#F40756'
   }
 
   const categoryLabel = (type) => {
-    const map = {
-      news: 'NEWS',
-      campus_update: 'CAMPUS',
-      event: 'EVENTS',
-      research: 'RESEARCH',
-    }
+    const map = { news: 'NEWS', campus_update: 'CAMPUS', event: 'EVENTS', research: 'RESEARCH', announcement: 'ANNOUNCEMENT' }
     return map[type] || type?.toUpperCase()
   }
 
@@ -105,36 +89,77 @@ export default function ArticlePage() {
         .tag-pill { transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1); }
         .tag-pill:hover { background: rgba(244,7,86,0.15) !important; color: #F40756 !important; transform: scale(1.05); }
 
+        /* ── HAMBURGER ── */
+        .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; }
+        .hamburger span { display: block; width: 22px; height: 2px; background: rgba(255,255,255,0.8); border-radius: 2px; transition: all 0.3s; }
+        .mobile-menu { display: none; }
+
+        /* ── DESKTOP SHOW ── */
+        .search-bar { display: flex !important; }
+        .desktop-nav { display: flex !important; }
+        .desktop-auth { display: flex !important; }
+
         input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.25); }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
         ::-webkit-scrollbar-thumb { background: rgba(244,7,86,0.4); border-radius: 3px; }
+        .search-form { border: 1px solid rgba(255,255,255,0.1) !important; transition: border-color 0.2s, box-shadow 0.2s; }
+        .search-form:focus-within { border-color: rgba(244,7,86,0.5) !important; box-shadow: 0 0 0 3px rgba(244,7,86,0.1) !important; }
 
         @keyframes pulse { 0%,100% { opacity:1; transform: scale(1); } 50% { opacity:0.5; transform: scale(1.3); } }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes fadeInUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+        @keyframes slideDown { from { opacity:0; transform: translateY(-10px); } to { opacity:1; transform: translateY(0); } }
         .fade-in { animation: fadeInUp 0.5s ease forwards; }
+
+        /* TABLET */
+        @media (max-width: 1024px) {
+          .search-bar { display: none !important; }
+          .main-grid { grid-template-columns: 1fr !important; }
+        }
+
+        /* MOBILE */
+        @media (max-width: 767px) {
+          .hamburger { display: flex !important; }
+          .desktop-nav { display: none !important; }
+          .desktop-auth { display: none !important; }
+          .search-bar { display: none !important; }
+          .mobile-menu { display: block; }
+          .header-inner { gap: 1rem !important; }
+          .main-wrap { padding: 1rem !important; gap: 1.25rem !important; }
+          .breadcrumb-wrap { padding: 8px 1rem !important; }
+          .article-pad { padding: 1.25rem !important; }
+          .article-title { font-size: 22px !important; letter-spacing: -0.3px !important; }
+          .article-cover { max-height: 220px !important; }
+          .author-row { flex-direction: column !important; gap: 12px !important; }
+          .share-row { margin-left: 0 !important; }
+          .reactions-wrap { gap: 8px !important; }
+          .reaction-btn { padding: 8px 12px !important; }
+        }
+
+        /* SMALL MOBILE */
+        @media (max-width: 480px) {
+          .article-title { font-size: 19px !important; }
+          .reaction-btn { padding: 6px 8px !important; }
+          .reaction-btn span:first-child { font-size: 20px !important; }
+        }
       `}</style>
 
-      {/* ── HEADER ── */}
-      <header style={{ background: 'rgba(13,13,26,0.95)', backdropFilter: 'blur(20px)', padding: '0 2rem', position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid rgba(244,7,86,0.15)' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', alignItems: 'center', gap: '2rem', height: 64 }}>
+      {/* ── HEADER (identical to HomePage) ── */}
+      <header style={{ background: 'rgba(13,13,26,0.95)', backdropFilter: 'blur(20px)', padding: '0 1.25rem', position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid rgba(244,7,86,0.15)' }}>
+        <div className="header-inner" style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', alignItems: 'center', gap: '1.5rem', height: 64 }}>
 
+          {/* Logo */}
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-            <div style={{
-              width: 42, height: 42,
-              background: 'linear-gradient(135deg, #F40756, #ff6b9d)',
-              borderRadius: '50%', display: 'flex', alignItems: 'center',
-              justifyContent: 'center', fontSize: 18, fontWeight: 900, color: '#fff',
-              boxShadow: '0 0 20px rgba(244,7,86,0.4)'
-            }}>U</div>
+            <div style={{ width: 42, height: 42, background: 'linear-gradient(135deg, #F40756, #ff6b9d)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 900, color: '#fff', boxShadow: '0 0 20px rgba(244,7,86,0.4)' }}>U</div>
             <div>
               <div style={{ color: '#fff', fontSize: 14, fontWeight: 800, lineHeight: 1.1, letterSpacing: 1 }}>UNIVERSITY</div>
               <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 9, letterSpacing: 2 }}>NEWS PLATFORM</div>
             </div>
           </Link>
 
-          <nav style={{ display: 'flex', gap: '1.5rem', flex: 1 }}>
+          {/* Desktop Nav */}
+          <nav className="desktop-nav" style={{ display: 'flex', gap: '1.5rem', flex: 1 }}>
             {[['Home', '/'], ['Faculties', '/faculties'], ['Spotlight', '/spotlight'], ['Events', '/events'], ['About', '/about']].map(([n, h]) => (
               <Link key={n} href={h} className="nav-link" style={{
                 color: n === 'Home' ? '#F40756' : 'rgba(255,255,255,0.6)',
@@ -145,56 +170,100 @@ export default function ArticlePage() {
             ))}
           </nav>
 
-          <form onSubmit={handleSearch} style={{ display: 'flex', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 24, alignItems: 'center', padding: '6px 14px', gap: 8 }}>
+          {/* Search Bar */}
+          <form
+            className="search-bar search-form"
+            onSubmit={handleSearch}
+            style={{ display: 'flex', background: 'rgba(255,255,255,0.07)', borderRadius: 24, alignItems: 'center', padding: '6px 14px', gap: 8 }}
+          >
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search news, events..."
               style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: 13, width: 180 }}
             />
-            <button type="submit" style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: 14, display: 'flex' }}>🔍</button>
+            <button type="submit" style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: 14, display: 'flex', alignItems: 'center' }}>🔍</button>
           </form>
 
-          {user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
-              <Link href="/profile" style={{ color: '#F40756', fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap' }}>My Dashboard</Link>
-              {user.role === 'admin' && (
-                <Link href="/admin/articles" style={{
-                  color: '#fff', fontSize: 12, fontWeight: 700,
-                  background: 'linear-gradient(135deg, #F40756, #ff6b9d)',
-                  padding: '6px 14px', borderRadius: 6, whiteSpace: 'nowrap',
-                  boxShadow: '0 4px 12px rgba(244,7,86,0.3)'
-                }}>Admin Panel</Link>
-              )}
-              <Link href="/profile" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                {user.avatar_url
-                  ? <img src={user.avatar_url} alt="" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', border: '2px solid #F40756', boxShadow: '0 0 10px rgba(244,7,86,0.3)' }} />
-                  : <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg, #F40756, #ff6b9d)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: 13, boxShadow: '0 0 10px rgba(244,7,86,0.3)' }}>
-                    {initials}
-                  </div>
-                }
-                <span style={{ color: '#fff', fontSize: 13, fontWeight: 600 }}>{user.full_name?.split(' ')[0]}</span>
+          {/* Desktop Auth */}
+          <div className="desktop-auth" style={{ display: 'flex' }}>
+            {user ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+                <Link href="/profile" style={{ color: '#F40756', fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap' }}>Dashboard</Link>
+                {user.role === 'admin' && (
+                  <Link href="/admin/articles" style={{ color: '#fff', fontSize: 12, fontWeight: 700, background: 'linear-gradient(135deg, #F40756, #ff6b9d)', padding: '6px 14px', borderRadius: 6, whiteSpace: 'nowrap', boxShadow: '0 4px 12px rgba(244,7,86,0.3)' }}>Admin</Link>
+                )}
+                <Link href="/profile" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  {user.avatar_url
+                    ? <img src={user.avatar_url} alt="" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', border: '2px solid #F40756', boxShadow: '0 0 10px rgba(244,7,86,0.3)' }} />
+                    : <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg, #F40756, #ff6b9d)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: 13, boxShadow: '0 0 10px rgba(244,7,86,0.3)' }}>{initials}</div>
+                  }
+                  <span style={{ color: '#fff', fontSize: 13, fontWeight: 600 }}>{user.full_name?.split(' ')[0]}</span>
+                </Link>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                <Link href="/login" style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 500 }}>Login</Link>
+                <Link href="/register" className="btn-bounce" style={{ background: 'linear-gradient(135deg, #F40756, #ff6b9d)', color: '#fff', padding: '8px 20px', borderRadius: 8, fontSize: 13, fontWeight: 700, boxShadow: '0 4px 15px rgba(244,7,86,0.4)', display: 'inline-block' }}>Register</Link>
+              </div>
+            )}
+          </div>
+
+          {/* Hamburger (mobile only) */}
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 10 }}>
+            {user && (
+              <Link href="/profile" className="hamburger" style={{ display: 'none' }}>
+                <div style={{ width: 32, height: 32, background: 'linear-gradient(135deg, #F40756, #ff6b9d)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: 12 }}>{initials}</div>
               </Link>
-            </div>
-          ) : (
-            <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexShrink: 0 }}>
-              <Link href="/login" style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 500 }}>Login</Link>
-              <Link href="/register" className="btn-bounce" style={{
-                background: 'linear-gradient(135deg, #F40756, #ff6b9d)',
-                color: '#fff', padding: '8px 20px', borderRadius: 8,
-                fontSize: 13, fontWeight: 700,
-                boxShadow: '0 4px 15px rgba(244,7,86,0.4)',
-                display: 'inline-block'
-              }}>Register</Link>
-            </div>
-          )}
+            )}
+            <button className="hamburger" onClick={() => setMenuOpen(o => !o)} aria-label="Menu">
+              <span style={{ transform: menuOpen ? 'rotate(45deg) translate(5px, 5px)' : 'none' }} />
+              <span style={{ opacity: menuOpen ? 0 : 1 }} />
+              <span style={{ transform: menuOpen ? 'rotate(-45deg) translate(5px, -5px)' : 'none' }} />
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Menu Dropdown */}
+        {menuOpen && (
+          <div className="mobile-menu" style={{
+            animation: 'slideDown 0.2s ease',
+            background: 'rgba(13,13,26,0.98)', backdropFilter: 'blur(20px)',
+            borderTop: '1px solid rgba(255,255,255,0.07)',
+            padding: '1rem 1.25rem 1.5rem'
+          }}>
+            <form onSubmit={(e) => { handleSearch(e); setMenuOpen(false) }} style={{ display: 'flex', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 24, alignItems: 'center', padding: '8px 14px', gap: 8, marginBottom: 16 }}>
+              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search news, events..." style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: 14, flex: 1 }} />
+              <button type="submit" style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: 16 }}>🔍</button>
+            </form>
+            <nav style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 16 }}>
+              {[['Home', '/'], ['Faculties', '/faculties'], ['Spotlight', '/spotlight'], ['Events', '/events'], ['About', '/about']].map(([n, h]) => (
+                <Link key={n} href={h} onClick={() => setMenuOpen(false)} style={{
+                  color: n === 'Home' ? '#F40756' : 'rgba(255,255,255,0.7)',
+                  fontSize: 15, fontWeight: 600, padding: '10px 12px',
+                  borderRadius: 8, background: n === 'Home' ? 'rgba(244,7,86,0.08)' : 'transparent'
+                }}>{n}</Link>
+              ))}
+            </nav>
+            {user ? (
+              <div style={{ display: 'flex', gap: 10 }}>
+                <Link href="/profile" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '10px', background: 'rgba(244,7,86,0.1)', border: '1px solid rgba(244,7,86,0.3)', borderRadius: 8, color: '#F40756', fontWeight: 700, fontSize: 14 }}>Dashboard</Link>
+                {user.role === 'admin' && <Link href="/admin/articles" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '10px', background: 'linear-gradient(135deg, #F40756, #ff6b9d)', borderRadius: 8, color: '#fff', fontWeight: 700, fontSize: 14 }}>Admin</Link>}
+              </div>
+            ) : (
+              <div style={{ display: 'flex', gap: 10 }}>
+                <Link href="/login" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: 'rgba(255,255,255,0.7)', fontWeight: 600, fontSize: 14 }}>Login</Link>
+                <Link href="/register" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '10px', background: 'linear-gradient(135deg, #F40756, #ff6b9d)', borderRadius: 8, color: '#fff', fontWeight: 700, fontSize: 14 }}>Register</Link>
+              </div>
+            )}
+          </div>
+        )}
       </header>
 
       {/* ── BREADCRUMB ── */}
       {article && (
-        <div style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '10px 2rem' }}>
-          <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'rgba(255,255,255,0.35)' }}>
+        <div className="breadcrumb-wrap" style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '10px 2rem' }}>
+          <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'rgba(255,255,255,0.35)', flexWrap: 'wrap' }}>
             <Link href="/" style={{ color: '#F40756', fontWeight: 600 }}>Home</Link>
             <span>›</span>
             <span style={{ textTransform: 'capitalize', color: 'rgba(255,255,255,0.5)' }}>{article.article_type?.replace('_', ' ')}</span>
@@ -205,7 +274,7 @@ export default function ArticlePage() {
       )}
 
       {/* ── MAIN ── */}
-      <main style={{ maxWidth: 1280, margin: '0 auto', padding: '2rem', display: 'grid', gridTemplateColumns: '1fr 320px', gap: '2rem' }}>
+      <main className="main-wrap main-grid" style={{ maxWidth: 1280, margin: '0 auto', padding: '2rem', display: 'grid', gridTemplateColumns: '1fr 320px', gap: '2rem' }}>
 
         {loading ? (
           <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '6rem', color: 'rgba(255,255,255,0.3)' }}>
@@ -222,50 +291,33 @@ export default function ArticlePage() {
           <>
             {/* LEFT — ARTICLE */}
             <div className="fade-in">
-              <div style={{
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.07)',
-                borderRadius: 16, overflow: 'hidden',
-                boxShadow: '0 8px 40px rgba(0,0,0,0.3)'
-              }}>
+              <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, overflow: 'hidden', boxShadow: '0 8px 40px rgba(0,0,0,0.3)' }}>
 
                 {/* COVER IMAGE */}
                 {article.cover_image && (
                   <div style={{ position: 'relative', overflow: 'hidden' }}>
-                    <img src={article.cover_image} alt={article.title}
+                    <img src={article.cover_image} alt={article.title} className="article-cover"
                       style={{ width: '100%', maxHeight: 420, objectFit: 'cover', display: 'block' }} />
                     <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 60%, rgba(13,13,26,0.8))' }} />
                   </div>
                 )}
 
-                <div style={{ padding: '2rem' }}>
+                <div className="article-pad" style={{ padding: '2rem' }}>
                   {/* CATEGORY + DATE */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
-                    <span style={{
-                      background: `${categoryColor(article.article_type)}22`,
-                      border: `1px solid ${categoryColor(article.article_type)}55`,
-                      color: categoryColor(article.article_type),
-                      fontSize: 10, fontWeight: 800,
-                      padding: '3px 12px', borderRadius: 20, letterSpacing: 1
-                    }}>{categoryLabel(article.article_type)}</span>
+                    <span style={{ background: `${categoryColor(article.article_type)}22`, border: `1px solid ${categoryColor(article.article_type)}55`, color: categoryColor(article.article_type), fontSize: 10, fontWeight: 800, padding: '3px 12px', borderRadius: 20, letterSpacing: 1 }}>{categoryLabel(article.article_type)}</span>
                     <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13 }}>📅 {formatDate(article.published_at)}</span>
                     <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13 }}>👁 {article.view_count} views</span>
                   </div>
 
                   {/* TITLE */}
-                  <h1 style={{ color: '#fff', fontSize: 32, fontWeight: 900, lineHeight: 1.3, marginBottom: 20, letterSpacing: -0.5 }}>
+                  <h1 className="article-title" style={{ color: '#fff', fontSize: 32, fontWeight: 900, lineHeight: 1.3, marginBottom: 20, letterSpacing: -0.5 }}>
                     {article.title}
                   </h1>
 
-                  {/* AUTHOR */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28, paddingBottom: 24, borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-                    <div style={{
-                      width: 38, height: 38,
-                      background: 'linear-gradient(135deg, #F40756, #ff6b9d)',
-                      borderRadius: '50%', display: 'flex', alignItems: 'center',
-                      justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: 14,
-                      boxShadow: '0 0 12px rgba(244,7,86,0.3)', flexShrink: 0
-                    }}>
+                  {/* AUTHOR + SHARE */}
+                  <div className="author-row" style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28, paddingBottom: 24, borderBottom: '1px solid rgba(255,255,255,0.07)', flexWrap: 'wrap' }}>
+                    <div style={{ width: 38, height: 38, background: 'linear-gradient(135deg, #F40756, #ff6b9d)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: 14, boxShadow: '0 0 12px rgba(244,7,86,0.3)', flexShrink: 0 }}>
                       {article.author_name?.charAt(0)}
                     </div>
                     <div>
@@ -274,44 +326,25 @@ export default function ArticlePage() {
                         <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>{article.author_faculty}</div>
                       )}
                     </div>
-
-                    {/* SHARE */}
-                    <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <div className="share-row" style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
                       <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)' }}>Share:</span>
                       {['f', 'X', 'in', '🔗'].map(s => (
-                        <button key={s} className="share-btn" style={{
-                          width: 32, height: 32,
-                          border: '1px solid rgba(255,255,255,0.12)',
-                          background: 'rgba(255,255,255,0.06)',
-                          borderRadius: 6, cursor: 'pointer',
-                          fontSize: 12, fontWeight: 700,
-                          color: 'rgba(255,255,255,0.6)'
-                        }}>{s}</button>
+                        <button key={s} className="share-btn" style={{ width: 32, height: 32, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.06)', borderRadius: 6, cursor: 'pointer', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.6)' }}>{s}</button>
                       ))}
                     </div>
                   </div>
 
                   {/* EXCERPT */}
                   {article.excerpt && (
-                    <div style={{
-                      borderLeft: '3px solid #F40756',
-                      paddingLeft: 16, marginBottom: 28,
-                      background: 'rgba(244,7,86,0.06)',
-                      padding: '14px 18px',
-                      borderRadius: '0 10px 10px 0'
-                    }}>
-                      <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 16, lineHeight: 1.8, fontStyle: 'italic' }}>
-                        {article.excerpt}
-                      </p>
+                    <div style={{ borderLeft: '3px solid #F40756', paddingLeft: 16, marginBottom: 28, background: 'rgba(244,7,86,0.06)', padding: '14px 18px', borderRadius: '0 10px 10px 0' }}>
+                      <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 16, lineHeight: 1.8, fontStyle: 'italic' }}>{article.excerpt}</p>
                     </div>
                   )}
 
                   {/* CONTENT */}
                   <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: 16, lineHeight: 1.9 }}>
                     {article.content?.split('\n').map((para, i) => (
-                      para.trim() ? (
-                        <p key={i} style={{ marginBottom: 16 }}>{para}</p>
-                      ) : null
+                      para.trim() ? <p key={i} style={{ marginBottom: 16 }}>{para}</p> : null
                     ))}
                   </div>
 
@@ -320,13 +353,7 @@ export default function ArticlePage() {
                     <div style={{ marginTop: 32, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.07)', display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
                       <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', fontWeight: 600 }}>Tags:</span>
                       {article.tags.split(',').map(tag => (
-                        <span key={tag} className="tag-pill" style={{
-                          background: 'rgba(255,255,255,0.07)',
-                          border: '1px solid rgba(255,255,255,0.1)',
-                          color: 'rgba(255,255,255,0.55)',
-                          padding: '4px 14px', borderRadius: 20,
-                          fontSize: 12, fontWeight: 500, cursor: 'default'
-                        }}>{tag.trim()}</span>
+                        <span key={tag} className="tag-pill" style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.55)', padding: '4px 14px', borderRadius: 20, fontSize: 12, fontWeight: 500, cursor: 'default' }}>{tag.trim()}</span>
                       ))}
                     </div>
                   )}
@@ -335,19 +362,10 @@ export default function ArticlePage() {
 
               {/* BACK BUTTON */}
               <div style={{ marginTop: 20 }}>
-                <button onClick={() => router.back()} className="back-btn" style={{
-                  background: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  color: 'rgba(255,255,255,0.7)',
-                  padding: '10px 24px', borderRadius: 8,
-                  cursor: 'pointer', fontSize: 14, fontWeight: 600
-                }}>← Back to News</button>
+                <button onClick={() => router.back()} className="back-btn" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.7)', padding: '10px 24px', borderRadius: 8, cursor: 'pointer', fontSize: 14, fontWeight: 600 }}>← Back to News</button>
               </div>
 
-              {/* REACTIONS */}
               <ReactionsSection articleId={article.id} user={user} />
-
-              {/* COMMENTS */}
               <CommentsSection articleId={article.id} user={user} />
             </div>
 
@@ -355,27 +373,16 @@ export default function ArticlePage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
               {/* RELATED NEWS */}
-              <div style={{
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.07)',
-                borderRadius: 16, overflow: 'hidden',
-                boxShadow: '0 8px 30px rgba(0,0,0,0.2)'
-              }}>
+              <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, overflow: 'hidden', boxShadow: '0 8px 30px rgba(0,0,0,0.2)' }}>
                 <div style={{ background: 'rgba(244,7,86,0.1)', borderBottom: '1px solid rgba(244,7,86,0.15)', padding: '1rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ color: '#fff', fontWeight: 800, fontSize: 14, letterSpacing: 0.5 }}>Related News</span>
                   <div style={{ width: 6, height: 6, background: '#F40756', borderRadius: '50%', boxShadow: '0 0 8px rgba(244,7,86,0.6)' }} />
                 </div>
                 {related.length === 0 ? (
-                  <div style={{ padding: '1.5rem', color: 'rgba(255,255,255,0.3)', fontSize: 13, textAlign: 'center' }}>
-                    No related articles
-                  </div>
+                  <div style={{ padding: '1.5rem', color: 'rgba(255,255,255,0.3)', fontSize: 13, textAlign: 'center' }}>No related articles</div>
                 ) : (
                   related.map((a, i) => (
-                    <Link key={a.id} href={`/articles/${a.slug}`} className="related-card" style={{
-                      display: 'flex', gap: 10, padding: '12px',
-                      borderBottom: i < related.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
-                      border: '1px solid transparent'
-                    }}>
+                    <Link key={a.id} href={`/articles/${a.slug}`} className="related-card" style={{ display: 'flex', gap: 10, padding: '12px', borderBottom: i < related.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none', border: '1px solid transparent' }}>
                       <div style={{ width: 80, height: 60, background: 'rgba(255,255,255,0.05)', borderRadius: 8, overflow: 'hidden', flexShrink: 0 }}>
                         {a.cover_image
                           ? <img src={a.cover_image} alt={a.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -394,35 +401,11 @@ export default function ArticlePage() {
               </div>
 
               {/* STAY UPDATED */}
-              <div style={{
-                background: 'linear-gradient(135deg, #1a0a2e 0%, #2d1a4e 50%, #1a1a3e 100%)',
-                border: '1px solid rgba(244,7,86,0.2)',
-                borderRadius: 16, padding: '1.5rem',
-                boxShadow: '0 0 40px rgba(244,7,86,0.08)'
-              }}>
+              <div style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #2d1a4e 50%, #1a1a3e 100%)', border: '1px solid rgba(244,7,86,0.2)', borderRadius: 16, padding: '1.5rem', boxShadow: '0 0 40px rgba(244,7,86,0.08)' }}>
                 <h3 style={{ color: '#fff', fontSize: 18, fontWeight: 900, marginBottom: 8, letterSpacing: -0.3 }}>Stay Updated!</h3>
-                <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, marginBottom: 16, lineHeight: 1.6 }}>
-                  Subscribe to get the latest news and announcements.
-                </p>
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  style={{
-                    width: '100%', padding: '10px 14px',
-                    border: '1px solid rgba(255,255,255,0.12)',
-                    background: 'rgba(255,255,255,0.07)',
-                    color: '#fff', borderRadius: 8,
-                    fontSize: 13, marginBottom: 10,
-                    fontFamily: 'inherit', outline: 'none'
-                  }}
-                />
-                <button className="btn-bounce" style={{
-                  width: '100%', padding: '11px',
-                  background: 'linear-gradient(135deg, #F40756, #ff6b9d)',
-                  color: '#fff', border: 'none', borderRadius: 8,
-                  fontSize: 14, fontWeight: 700, cursor: 'pointer',
-                  boxShadow: '0 4px 20px rgba(244,7,86,0.4)'
-                }}>Subscribe</button>
+                <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, marginBottom: 16, lineHeight: 1.6 }}>Subscribe to get the latest news and announcements.</p>
+                <input type="email" placeholder="Enter your email" style={{ width: '100%', padding: '10px 14px', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.07)', color: '#fff', borderRadius: 8, fontSize: 13, marginBottom: 10, fontFamily: 'inherit', outline: 'none' }} />
+                <button className="btn-bounce" style={{ width: '100%', padding: '11px', background: 'linear-gradient(135deg, #F40756, #ff6b9d)', color: '#fff', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 20px rgba(244,7,86,0.4)' }}>Subscribe</button>
               </div>
             </div>
           </>
@@ -430,7 +413,7 @@ export default function ArticlePage() {
       </main>
 
       {/* ── FOOTER ── */}
-      <footer style={{ background: 'rgba(255,255,255,0.02)', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '2.5rem 2rem', marginTop: '3rem' }}>
+      <footer style={{ background: 'rgba(255,255,255,0.02)', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '2.5rem 1.25rem', marginTop: '3rem' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg, #F40756, #ff6b9d)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900, fontSize: 14, boxShadow: '0 0 15px rgba(244,7,86,0.3)' }}>U</div>
@@ -439,7 +422,7 @@ export default function ArticlePage() {
               <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11 }}>INNOVATE • INSPIRE • IMPACT</div>
             </div>
           </div>
-          <div style={{ display: 'flex', gap: '1.5rem' }}>
+          <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
             {['Home', 'Faculties', 'Spotlight', 'Events', 'About'].map(n => (
               <Link key={n} href="/" style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, fontWeight: 500 }}>{n}</Link>
             ))}
@@ -469,7 +452,7 @@ function ReactionsSection({ articleId, user }) {
       const res = await fetch(url)
       const data = await res.json()
       const map = {}
-        ; (data.data || []).forEach(r => { map[r.emoji] = Number(r.count) })
+      ;(data.data || []).forEach(r => { map[r.emoji] = Number(r.count) })
       setReactions(map)
       setUserReaction(data.userReaction || null)
     } catch (err) {
@@ -507,14 +490,9 @@ function ReactionsSection({ articleId, user }) {
   }
 
   return (
-    <div style={{
-      background: 'rgba(255,255,255,0.04)',
-      border: '1px solid rgba(255,255,255,0.07)',
-      borderRadius: 16, padding: '1.5rem', marginTop: 16,
-      boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
-    }}>
+    <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '1.5rem', marginTop: 16, boxShadow: '0 4px 20px rgba(0,0,0,0.2)' }}>
       <div style={{ fontSize: 14, fontWeight: 800, color: '#fff', marginBottom: 14, letterSpacing: 0.3 }}>Reactions</div>
-      <div style={{ display: 'flex', gap: 12 }}>
+      <div className="reactions-wrap" style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {emojis.map(emoji => (
           <button key={emoji} onClick={() => handleReact(emoji)} className="reaction-btn" style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -557,8 +535,6 @@ function CommentsSection({ articleId, user }) {
   const handleSubmit = async () => {
     if (!user) return alert('Please login to comment')
     if (!text.trim()) return
-    console.log('user object:', user)
-    console.log('user.id:', user.id)
     setSubmitting(true)
     try {
       await fetch(`/api/articles/${articleId}/comments`, {
@@ -589,107 +565,55 @@ function CommentsSection({ articleId, user }) {
     }
   }
 
-  const formatDate = (d) => new Date(d).toLocaleDateString('en-US', {
-    year: 'numeric', month: 'short', day: 'numeric'
-  })
-
+  const formatDate = (d) => new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
   const initials = (name) => name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
 
   return (
-    <div style={{
-      background: 'rgba(255,255,255,0.04)',
-      border: '1px solid rgba(255,255,255,0.07)',
-      borderRadius: 16, padding: '1.5rem', marginTop: 16,
-      boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
-    }}>
+    <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '1.5rem', marginTop: 16, boxShadow: '0 4px 20px rgba(0,0,0,0.2)' }}>
       <div style={{ fontSize: 14, fontWeight: 800, color: '#fff', marginBottom: 16, letterSpacing: 0.3 }}>
         Comments ({comments.length})
       </div>
 
-      {/* INPUT */}
       {user ? (
         <div style={{ display: 'flex', gap: 10, marginBottom: 28 }}>
-          <div style={{
-            width: 36, height: 36,
-            background: 'linear-gradient(135deg, #F40756, #ff6b9d)',
-            borderRadius: '50%', display: 'flex', alignItems: 'center',
-            justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: 13,
-            flexShrink: 0, boxShadow: '0 0 10px rgba(244,7,86,0.3)'
-          }}>
+          <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg, #F40756, #ff6b9d)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: 13, flexShrink: 0, boxShadow: '0 0 10px rgba(244,7,86,0.3)' }}>
             {initials(user.full_name)}
           </div>
           <div style={{ flex: 1 }}>
-            <textarea
-              value={text}
-              onChange={e => setText(e.target.value)}
-              placeholder="Write a comment..."
-              rows={3}
-              style={{
-                width: '100%', padding: '10px 14px',
-                border: '1px solid rgba(255,255,255,0.1)',
-                background: 'rgba(255,255,255,0.06)',
-                borderRadius: 10, fontSize: 14,
-                fontFamily: 'inherit', resize: 'vertical',
-                outline: 'none', color: '#fff'
-              }}
-            />
-            <button onClick={handleSubmit} disabled={submitting} className="btn-bounce" style={{
-              marginTop: 8,
-              background: 'linear-gradient(135deg, #F40756, #ff6b9d)',
-              color: '#fff', border: 'none', padding: '9px 22px',
-              borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer',
-              boxShadow: '0 4px 15px rgba(244,7,86,0.35)',
-              opacity: submitting ? 0.7 : 1
-            }}>
+            <textarea value={text} onChange={e => setText(e.target.value)} placeholder="Write a comment..." rows={3}
+              style={{ width: '100%', padding: '10px 14px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.06)', borderRadius: 10, fontSize: 14, fontFamily: 'inherit', resize: 'vertical', outline: 'none', color: '#fff' }} />
+            <button onClick={handleSubmit} disabled={submitting} className="btn-bounce" style={{ marginTop: 8, background: 'linear-gradient(135deg, #F40756, #ff6b9d)', color: '#fff', border: 'none', padding: '9px 22px', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 15px rgba(244,7,86,0.35)', opacity: submitting ? 0.7 : 1 }}>
               {submitting ? 'Posting...' : 'Post Comment'}
             </button>
           </div>
         </div>
       ) : (
-        <div style={{
-          background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-          borderRadius: 10, padding: '1rem', marginBottom: 24, textAlign: 'center',
-          fontSize: 13, color: 'rgba(255,255,255,0.4)'
-        }}>
+        <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '1rem', marginBottom: 24, textAlign: 'center', fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>
           Please <a href="/login" style={{ color: '#F40756', fontWeight: 700 }}>login</a> to leave a comment
         </div>
       )}
 
-      {/* COMMENTS LIST */}
       {comments.length === 0 ? (
         <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.25)', fontSize: 13, padding: '1rem' }}>
           No comments yet. Be the first to comment!
         </div>
       ) : (
         comments.map(c => (
-          <div key={c.id} style={{
-            display: 'flex', gap: 10, marginBottom: 16,
-            paddingBottom: 16, borderBottom: '1px solid rgba(255,255,255,0.06)'
-          }}>
-            <div style={{
-              width: 36, height: 36,
-              background: 'rgba(255,255,255,0.1)',
-              border: '1px solid rgba(255,255,255,0.12)',
-              borderRadius: '50%', display: 'flex', alignItems: 'center',
-              justifyContent: 'center', color: 'rgba(255,255,255,0.7)',
-              fontWeight: 700, fontSize: 13, flexShrink: 0, overflow: 'hidden'
-            }}>
+          <div key={c.id} style={{ display: 'flex', gap: 10, marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+            <div style={{ width: 36, height: 36, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.7)', fontWeight: 700, fontSize: 13, flexShrink: 0, overflow: 'hidden' }}>
               {c.avatar_url
                 ? <img src={c.avatar_url} alt="" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover' }} />
                 : initials(c.full_name)
               }
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5, flexWrap: 'wrap', gap: 4 }}>
                 <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.85)' }}>{c.full_name}</span>
                 <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{formatDate(c.created_at)}</span>
               </div>
               <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>{c.content}</p>
               {user?.id === c.user_id && (
-                <button onClick={() => handleDelete(c.id)} style={{
-                  marginTop: 6, background: 'none', border: 'none',
-                  color: '#F40756', fontSize: 12, cursor: 'pointer', fontWeight: 600
-                }}>Delete</button>
+                <button onClick={() => handleDelete(c.id)} style={{ marginTop: 6, background: 'none', border: 'none', color: '#F40756', fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>Delete</button>
               )}
             </div>
           </div>
